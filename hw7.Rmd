@@ -1,0 +1,326 @@
+---
+title: "Assignment007: Intro to Data Viz"
+author: "陳宥橋"  ## 更換為個人姓名
+date: "`r format(Sys.time(), '%Y/%m/%d %H:%M:%S')`"  ## 請勿更動
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+## 使用Assingment004的setup chunk載入正向心理學資料`dat`,`pinfo`及tidyverse套件
+library(tidyverse)
+library(babynames)
+data_path <- dir("..", 
+             pattern= "ahi-cesd.csv", 
+             include.dirs = TRUE, 
+             recursive = TRUE, 
+             full.names = TRUE) 
+
+par_path <- dir("..", 
+             pattern= "participant-info.csv", 
+             include.dirs = TRUE, 
+             recursive = TRUE, 
+             full.names = TRUE) 
+dat <- read.csv(data_path);
+pinfo <- read.csv(par_path);
+all_dat <- inner_join(dat,pinfo,by = c("id","intervention"));
+summarydata <- select(all_dat,ahiTotal,cesdTotal,sex,age,educ,income,occasion,elapsed.days)
+```
+
+> 作業演練項目說明，請見[電子書](https://rstat-project.github.io/ug1-practical/intro-to-data-viz.html)及[中文講義](https://rstat-project.github.io/ug-tactic/%E9%80%B1-07_ggplot%E8%A6%96%E8%A6%BA%E5%8C%96%E8%AA%9E%E6%B3%95.html)。
+
+- 所有練習項目除了放置達成練習目標的程式碼及執行成果，也要說明測試程式碼的發現，以及你對執行成果的解讀。
+
+- 本單元除了電子書的演練問題，也要嘗試演練及解答加碼挑戰題。
+
+## 練習1
+
+**課後演練** 復習`dplyr`函式功能
+
+```{r a1-data}
+## 回答問題用資料
+pets <- data.frame(
+    id = 1:400,
+    age = sample(20:65,size = 400, replace = TRUE),
+    sex = sample(c("F","M"),size = 400, replace = TRUE),
+    cats = sample(0:10,size = 400, replace = TRUE),
+    dogs = sample(0:10,size = 400, replace = TRUE)
+)
+```
+
+
+運用`pets`資料集，回答電子書7.2的每個問題，每個問題寫一行程式碼並存入物件列印或使用inline code輸出。
+
+```{r a1}
+## 電子書7.2 Activity 1: dplyr recap 問題回答區
+new_age = filter(pets,age<50)
+print(new_age)
+new_average = summarise(pets, avergeage =   mean(pets$age), num= n())
+print(new_average);
+num_pet = mutate(pets , total = cats + dogs)
+print(num_pet)
+ave_par = group_by(pets,sex) %>% summarise(mean_age = mean(age))
+print(ave_par)
+cats_own = select(pets,id,cats) %>% arrange(cats)
+print(cats_own)
+
+
+```
+
+
+## 練習2pre
+
+受測者人數表。人數柱狀圖資訊的表格化。成果表格參考[中文講義](https://rstat-project.github.io/ug-tactic/%E9%80%B1-07_ggplot%E8%A6%96%E8%A6%BA%E5%8C%96%E8%AA%9E%E6%B3%95.html)
+
+
+> 會使用到的函式有 `dplyr::summarise()`,`dplyr::summarise()`,`dplyr::mutate()`,`base::ifelse`
+
+
+```{r a2-pre}
+freq_tablg = summarydata %>% mutate(gender = ifelse(sex == 1,"Female","Male")) %>% 
+    group_by(gender) %>%
+    summarise('Number of participants' = n())
+```
+
+**挑戰**：回覆教練任意挑選的某個類別變項的分組人數。
+```{r a2-challenge}
+table_ <- summarydata %>%
+group_by(educ) %>%
+summarise('Number of participants' = n())
+table_
+```
+
+## 練習2
+
+同第7週的練習1與2，匯入資料並挑出需要的欄位`summarydata`。
+
+```{r a2}
+summarydata <- select(all_dat,ahiTotal,cesdTotal,sex,age,educ,income,occasion,elapsed.days)
+```
+
+
+## 練習3
+
+預備動作: 保留變項沒有被轉換為factors的資料集，存入另一個物件`summarydata0
+
+```{r a3}
+summarydata0 = summarydata;
+summarydata = summarydata %>% mutate(sex = as.factor(sex),educ = as.factor(educ),income = as.factor(income))
+```
+`
+
+## 練習4
+
+Bar plot分解動作
+
+
+```{r a4-1}
+ggplot(summarydata,aes(x = sex))
+# 加上aex即架好座標軸
+```
+
+測試：使用`summarydata0`能否啟動繪圖？
+```{r a4-1-test}
+ggplot(summarydata0,aes(x = sex))
+#改成0時，加上aex即架好的座標軸數值會變成含有小數的數值
+```
+
+
+```{r a4-2}
+ggplot(summarydata, aes(x = sex)) +
+  geom_bar()
+# 加上geom_bar即畫好圖
+```
+
+
+測試：比較以`summarydata`和`summarydata0`繪製的柱狀圖？
+```{r a4-2-test}
+ggplot(summarydata0, aes(x = sex)) +
+  geom_bar()
+# 改成0時，加上geom_bar即畫好的圖，因為Ｘ座標值有差，故畫出的圖不會到旁邊的小數上
+```
+
+**參考資訊** 維基百科：[測量尺度](https://zh.wikipedia.org/wiki/%E6%B8%AC%E9%87%8F%E5%B0%BA%E5%BA%A6)
+
+**活用** R匯入正向心理學量表資料的預設類別，相當於那種測量尺度？這項正向心理學研究的作者們是使用什麼測量尺度分析資料？
+
+```{r a4-3}
+ggplot(summarydata, aes(x = sex, fill = sex)) +
+  geom_bar()
+## 加上fill去做顏色填色，會有預設顏色
+```
+
+
+測試：比較以`summarydata`和`summarydata0`繪製的柱狀圖？
+```{r a4-3-test}
+ggplot(summarydata0, aes(x = sex, fill = sex)) +
+  geom_bar()
+##因為0的關係，會導致顏色無法上上去
+```
+
+
+```{r a4-4}
+ggplot(summarydata, aes(x = sex, fill = sex)) +
+  geom_bar(show.legend = FALSE)
+#可以把每個顏色所表示的意思的表格拿掉
+```
+
+```{r a4-4test}
+ggplot(summarydata0, aes(x = sex, fill = sex)) +
+  geom_bar(show.legend = FALSE)
+#可以把每個顏色所表示的意思的表格拿掉
+```
+測試：比較以`summarydata`和`summarydata0`繪製的柱狀圖？
+
+
+```{r a4-5}
+ggplot(summarydata, aes(x = sex, fill = sex)) +
+  geom_bar(show.legend = FALSE) +
+  scale_x_discrete(name = "Participant Sex", 
+                   labels = c("Female", "Male")) +
+  scale_y_continuous(name = "Number of participants")
+##加上離散和連續部分去做操作
+```
+
+
+測試：比較以`summarydata`和`summarydata0`繪製柱狀圖？
+```{r a4-5-test}
+ggplot(summarydata0, aes(x = sex, fill = sex)) +
+  geom_bar(show.legend = FALSE) +
+  scale_x_discrete(name = "Participant Sex", 
+                   labels = c("Female", "Male")) +
+  scale_y_continuous(name = "Number of participants")
+#對0來說，這是一個連續的東西，故相距很近且沒有給他x labels
+```
+筆記：為何x一定要用"discrete"，y一定要用"continuous"
+因為和變相測量尺度有關，x軸表示的為兩個不同物，但y軸表示的為連續的相同概念的東西
+
+```{r a4-6}
+ggplot(summarydata, aes(x = sex, fill = sex)) +
+  geom_bar(show.legend = FALSE) +
+  scale_x_discrete(name = "Participant Sex", 
+                   labels = c("Female", "Male")) +
+  scale_y_continuous(name = "Number of participants") +
+  theme_minimal()
+## 可以利用theme_minimal調整背後的顏色
+```
+
+測試：更換其他[主題](https://ggplot2-book.org/polishing.html)
+
+
+```{r a4-7}
+ggplot(summarydata, aes(x = sex, fill = sex)) +
+  geom_bar(show.legend = FALSE) +
+  scale_x_discrete(name = "Participant Sex", 
+                   labels = c("Female", "Male")) +
+  scale_y_continuous(name = "Number of participants") +
+  theme_minimal() +
+  scale_fill_viridis_d(option = "E")
+##利用scale_fill_viridis_d 去做顏色調整
+```
+
+測試：更換其他色彩組合
+
+
+```{r a4-8}
+ggplot(summarydata, aes(x = sex, fill = sex)) +
+  geom_bar(show.legend = FALSE, alpha = .8) +
+  scale_x_discrete(name = "Participant Sex", 
+                   labels = c("Female", "Male")) +
+  scale_y_continuous(name = "Number of participants") +
+  theme_minimal() +
+  scale_fill_viridis_d(option = "E")
+## 利用geom_bar 的alpha去做調整
+```
+
+測試：調整透明度
+
+
+## 練習5pre
+
+**挑戰**：不同收入的幸福感量表分數統計。成果表格參考[中文講義](https://rstat-project.github.io/ug-tactic/%E9%80%B1-07_ggplot%E8%A6%96%E8%A6%BA%E5%8C%96%E8%AA%9E%E6%B3%95.html)
+
+> 會使用到的函式有 `dplyr::summarise()`,`dplyr::group_by()`,`dplyr::mutate()`,`base::ifelse`,`base::quantile()`,`stats::IQR()`
+
+```{r a5-pre}
+new_table = summarydata %>% mutate(Income = if_else(income == 1,"Below Average",if_else(income==2,"Average","Above Average"))) %>% group_by(Income) %>% summarise(lower_bound = quantile(ahiTotal,.25)-IQR(ahiTotal),Q1 = quantile(ahiTotal,.25),Median = quantile(ahiTotal,.50),Q3 = quantile(ahiTotal,.75),uper_bound = quantile(ahiTotal,.75)+IQR(ahiTotal))
+new_table
+```
+
+
+## 練習5
+
+Violin-boxplot分解動作(模式B暖身)
+
+自行演練：比照練習4，依步驟繪製小提琴/箱形圖，完成時說明練習5pre表格內的統計量數，對應到小提琴/箱形圖的那些成份
+
+
+```{r a5-1}
+ggplot(summarydata,aes(x = income,y = ahiTotal , fill = income))+geom_violin(trim = FALSE,show.legend = FALSE,alpha =.4)
+#小提琴圖
+```
+
+
+```{r a5-2}
+ggplot(summarydata,aes(x = income,y = ahiTotal , fill = income))+geom_violin(trim = FALSE,show.legend = FALSE,alpha =.4) +
+    geom_boxplot(width=.2, show.legend = FALSE , alpha = .7)
+#加上boxplot
+```
+
+```{r a5-2-2}
+ggplot(summarydata, aes(x = income, y = ahiTotal , fill = income))+
+    geom_boxplot(width=.2, show.legend = FALSE , alpha = .7)+
+    geom_violin(trim = FALSE,show.legend = FALSE,alpha =.4)
+#boxplot放在violin前面
+```
+測試：比較電子書[8.9](https://rstat-project.github.io/ug-tactic/%E9%80%B1-07_ggplot%E8%A6%96%E8%A6%BA%E5%8C%96%E8%AA%9E%E6%B3%95.html#%E7%B7%B4%E7%BF%925-1-%E5%B0%8F%E6%8F%90%E7%90%B4%E5%8F%8A%E7%AE%B1%E5%9E%8B%E5%9C%96%E6%A8%A1%E5%BC%8Fb%E6%9A%96%E8%BA%AB)，兩套製程的執行效果。
+
+
+```{r a5-3}
+ggplot(summarydata,aes(x = income,y = ahiTotal , fill = income))+geom_violin(trim = FALSE,show.legend = FALSE,alpha =.4) +
+    geom_boxplot(width=.2, show.legend = FALSE , alpha = .7)+
+    scale_x_discrete(name = 'Income',labels = c("Below Average","Average","Above Average"))
+#加上X座標名稱
+```
+
+
+```{r a5-4}
+ggplot(summarydata,aes(x = income,y = ahiTotal , fill = income))+geom_violin(trim = FALSE,show.legend = FALSE,alpha =.4) +
+    geom_boxplot(width=.2, show.legend = FALSE , alpha = .7)+
+    scale_x_discrete(name = 'Income',labels = c("Below Average","Average","Above Average"))+
+  scale_y_continuous(name = "Authentic Happiness Inventory Score")
+#加上Ｙ座標名稱
+```
+
+
+```{r a5-5}
+ggplot(summarydata,aes(x = income,y = ahiTotal , fill = income))+geom_violin(trim = FALSE,show.legend = FALSE,alpha =.4) +
+    geom_boxplot(width=.2, show.legend = FALSE , alpha = .7)+
+    scale_x_discrete(name = 'Income',labels = c("Below Average","Average","Above Average"))+
+  scale_y_continuous(name = "Authentic Happiness Inventory Score") + theme_minimal() 
+#利用theme_minimal調整背後的顏色
+```
+
+
+```{r a5-6}
+ggplot(summarydata,aes(x = income,y = ahiTotal , fill = income))+geom_violin(trim = FALSE,show.legend = FALSE,alpha =.4)+
+    geom_boxplot(width = .2,show.legend = FALSE,alpha = .7) + 
+    scale_x_discrete(name = 'Income',labels = c("Below Average","Average","Above Average")) +
+    scale_y_continuous(name = "Authentic Happiness Inventory Score") + theme_minimal() + scale_fill_viridis_d()
+#調整顏色
+```
+
+
+
+
+**課後演練**: 小提琴圖最高峰的分數為何不等於中位數？也不是平均值？如果最高峰等於中位數與平均值，小提琴圖會是什麼模樣？
+1.小提琴最高峰->眾數
+2.常態分佈
+
+## 練習6
+
+請見**原始論文**(全文檔在Assignment 6)的Figure 2與Figure 3。
+
+> 為了減輕教練與助教批改工作負擔，活用成果請回覆在討論區單元帖。
+> **活用**：分享你重製Figure 2與Figure 3的成果，預期程式碼很長，推薦使用[gist](https://gist.github.com/)整理程式碼和執行結果，方便在討論區交流。繳交期限之後在討論區點評，還原度越高者，emoji點數越多。

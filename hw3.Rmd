@@ -1,0 +1,91 @@
+---
+title: "Assignment003: Intro to R"
+author: "陳宥橋"  ## 更換為個人姓名
+date: "`r format(Sys.time(), '%Y/%m/%d %H:%m:%S')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# some package has to be loaded at first
+library(tidyverse)
+data_path <- dir("..",             ## 假設data folder 在前兩層資料夾
+             pattern= "ahi-cesd.csv", ## 要匯入的資料夾檔名
+             include.dirs = TRUE,      ## 搜尋下層資料夾
+             recursive = TRUE,         ## 搜尋所有相同檔名的檔案
+             full.names = TRUE)        ## 回傳完整路徑
+dt <- read_csv(data_path) ## 設定匯入資料編碼是UTF-8
+```
+
+
+## 練習一
+
+setup chunck設定ＯＫ
+
+## 練習二
+
+跳過
+
+## 練習三
+
+[第一個ＲＭＤ](Intro_To_R.Rmd)
+
+
+## 練習四
+
+List of files
+```{r}
+dir(include.dirs = TRUE, recursive = TRUE)
+```
+
+## 練習五
+
+About me
+```{r}
+name <- "Joe" 
+age <- 19
+today <- Sys.Date()
+today_taiwan <- Sys.time()
+next_birthday <- as.Date("2022-11-22")
+```
+
+## 練習6
+
+觀察心得：
+在改動數值時，所對應的值都會跟著改動，且不同的method會有不同的回傳，以達成不同的效果。
+
+## 練習7
+
+My name is `r name` and I am `r age` years old. It is `r next_birthday - today` days until my birthday.
+我今天做了一個我的[第一個ＲＭＤ](Intro_To_R.Rmd)
+
+## 練習8
+
+個人網頁初稿：
+
+## 陳宥橋
+
+### 基本資料
+
+年齡：19
+生日：11/22
+興趣：看書、聽音樂、唱歌
+目前就讀科系：資訊113
+
+### 學涯發展
+
+國小：復旦國小
+國中：中壢國中
+高中：武陵高中
+大學：成功大學
+
+### 活動經歷
+
+武陵高中合唱團活動長
+成功大學合唱團家長
+成大資訊工程係學會執秘
+成功大學資訊工程資訊週活動長
+
+### 工商服務時間
+歡迎加入[成大合唱團](https://www.facebook.com/chorus.ncku)
+    

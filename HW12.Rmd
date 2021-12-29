@@ -1,0 +1,100 @@
+---
+title: "HW13"
+author: "【【【【陳宥橋】】】】"
+date: "2021/12/16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 1. 名詞解釋:
+
+##### (1)標準分數(standard score)
+A: 反映了該分數距離樣本平均數有多少個標準差單位的距離
+
+##### (2)實徵機率分配(empirical probability distribution)
+A: 需用實際發生的事件來決定結果的機率
+
+##### (3)常態分配(normal distribution)
+A: 又稱為高斯分佈，是一個理論的數學分配，指母體分數的相對次數
+
+##### (4) 二項式分配(binomial distribution)
+A: N個獨立白努力試驗中成功次數的機率分配，其中每次白努力試驗的成功機率為P
+
+### 2. 假設魏氏智力測驗分數服從常態分配，其平均數 100，變異數 152;請回答 以下問題：
+
+##### (1) 隨機抽取一個人，其智力分數大於等於 115 的機率為何?
+A： 0.1587
+
+##### (2) 隨機抽取一個人，其智力分數小於等於 115 的機率為何?  
+A：0.8413
+
+##### (3) 隨機抽取一個人，其智力分數大於等於 70 的機率為何? 
+A：0.9722
+
+##### (4) 隨機抽取一個人，其智力分數小於等於 70 的機率為何?
+A：0.0228
+
+##### (5) 隨機抽取一個人，其智力分數介於 90 至 120 的機率為何? 
+A：
+  (120-100)/15 = 1.33 -> 0.4082
+		(90 - 100)/15 = -0.6 -> 0.2257
+		0.4082 + 0.2257 = 0.6339
+
+##### (6) 測驗分數包含中間 80%的分數區間為何? 
+A：
+    約為 +1.28 ~ -1.28 ->
+    1.28*15 + 100 = 119.2 -> 119.2 - 19.2 * 2 = 80.8
+		80.8 ~ 119.2
+
+### 3.已知某高中的高一學生占 30%、高二占 35%、高三占 35%，且此高中的高 一學生中有 70%參加社團、高二 80%、高三 60%。若從該校學生中任意抽 選一人，則 
+
+##### (1) 此學生沒有參加社團的機率為何?
+A : 1 - (0.3*0.7 + 0.35 * 0.8 + 0.35 * 0.6) = 0.3
+
+##### (2) 若所抽選的學生有參加社團，則此人為高三學生的機率為何?
+A : 0.35 * 0.6 / (0.3*0.7 + 0.35 * 0.8 + 0.35 * 0.6) = 0.3
+
+### 4. 請用 R 分別繪製常態分配的理論分配 3*3 套圖與實徵分配 3*3 套圖，其中 列(row)變數為平均數(-1, 0, 1)、欄變數(column)為變異數(0.52, 12, 22)，並在 main、xlab、ylab、xlim、ylim 等引數(arguments)加入適當的設定。 
+
+##### (1) 理論分配 3*3 套圖
+```{r}
+par(mfrow=c(3,3))
+x <- seq(-5,5,0.01)
+for (mu in c(0.5,1,2)) {
+npdf <- dnorm(x,-1,mu) 
+plot(x,npdf,type="l", main=paste("N(-1,", mu, ")", sep=""), ylim=c(0,0.8),xlim=c(-4,4),xlab = "score",ylab = "Density")
+}
+for (mu in c(0.5,1,2)) {
+npdf <- dnorm(x,0,mu) 
+plot(x,npdf,type="l", main=paste("N(0,", mu, ")", sep=""), ylim=c(0,0.8),xlim=c(-4,4),xlab = "score",ylab = "Density")
+}
+for (mu in c(0.5,1,2)) {
+npdf <- dnorm(x,1,mu) 
+plot(x,npdf,type="l", main=paste("N(1,", mu, ")", sep=""), ylim=c(0,0.8),xlim=c(-4,4),xlab = "score",ylab = "Density")
+}
+
+```
+
+##### (2) 實徵分配 3*3 套圖
+```{r}
+par(mfrow=c(3,3))
+size <- 10000
+for (sigma in c(0.5,1,2)) { 
+sample <- rnorm(size,-1,sigma)
+hist(sample, main=paste("Histogram of N(-1,",sigma,") Sample",sep=""), xlab="X",
+ylab="Frequency", xlim=c(-6,6), ylim=c(0,1000), breaks=30)
+}
+for (sigma in c(0.5,1,2)) { 
+sample <- rnorm(size,0,sigma)
+hist(sample, main=paste("Histogram of N(0,",sigma,") Sample",sep=""), xlab="X",
+ylab="Frequency", xlim=c(-6,6), ylim=c(0,1000), breaks=30)
+}
+for (sigma in c(0.5,1,2)) { 
+sample <- rnorm(size,1,sigma)
+hist(sample, main=paste("Histogram of N(1,",sigma,") Sample",sep=""), xlab="X",
+ylab="Frequency", xlim=c(-6,6), ylim=c(0,1000), breaks=30)
+}
+```

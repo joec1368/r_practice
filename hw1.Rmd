@@ -1,0 +1,45 @@
+---
+title: "Assignment001: Getting to know the data"
+author: "陳宥橋"  ## 更換為個人姓名
+date: "`r format(Sys.time(), '%x %X')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+在[單元1](https://rstat-project.github.io/ug1-practical/getting-to-know-the-data.html)的上課過程，我們閱讀[Woodworth等人(2018)的論文](https://rstat-project.github.io/ug1-practical/files/woodworth.pdf)以及作者的公開資料。請將隨堂練習的成果，記錄在以下要點之後：
+
+## 練習1
+
+- AHI是什麼測驗？
+Authentic Happiness Inventory
+- CES-D是什麼測驗？
+Center for Epidemiological Studies Depression
+- 這份研究收集多少參與者？
+295
+- AHI有多少題目？
+24
+- CES-D有多少題目？
+20
+## 練習2
+
+依照上課時老師的建議，將`participant-info.csv`與`ahi-cesd.csv`儲存在對應資料夾。參考[README](README.md)的示範，將自已的檔案總管截圖存檔，以下myfile改成存檔檔名。
+
+![總攬](total.png)
+
+![作業](HW.png)
+
+![參考資料](data.png)
+
+**尚未有個人電腦設備的同學，可使用個人雲端硬碟資料夾整理檔案。**
+
+## 練習3
+
+- `participant-info.csv`有多少欄位？
+6
+- `ahi-cesd.csv`有多少欄位？
+50
+- `sex`欄位的第一條紀錄是什麼？
+female

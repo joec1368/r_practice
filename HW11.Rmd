@@ -1,0 +1,89 @@
+---
+title: "HW11"
+author: "【【【【陳宥橋】】】】"
+date: "2021/11/25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+### 1. 請回答以下問題:
+
+##### (1)根據主計處統計,2020台灣家庭可支配收入平均數為108萬元,中位數為92.9萬元。請判斷此收入分配的偏態情形,並說明哪個集中趨勢量數較能代表此分配?
+A: 中位數;這樣就不會受薪水極端值影響。
+
+##### (2)社會局欲了解市民的初婚年齡,以研擬相關就業育兒補助措施;此時,你認為哪個集中趨勢量數最具參考價值?為什麼?
+A: 眾數 ; 因為代表大多數人結婚年齡，這樣才能有效益最大化。
+
+##### (3)部分身心疾患與年齡呈現一定關聯性,例如阿茲海默症(AD)。心理學家想了解AD患者的年齡分配狀況,以協助衛福部研擬相關預防介入措施。請問何種集中趨勢量數最具參考價值?為什麼?
+A: 眾數 ; 因為代表著大多數人發生時的值。
+
+
+### 2. 對於以下陳述,所描述的是哪種變異量數?
+
+(1)提供包含所有分數的區間。A： 全距
+
+(2)此數值為離均差平方和/(N-1)。A：母體估計變異數
+
+(3)此數值等於$x_{h}-x_{l}$。A：全距
+
+(4)提供分數距離分配平均數多遠的離均差平方的平均的母體估計數。A：母體變異數
+
+(5)提供分數距離分配平均數多遠的離均差平方的平均的平方根的母體估計數。A：母體標準差
+
+(6)此數值為第3四分位數與第1四分位數的差。A：四分位距
+
+(7)計算此數值僅需用到分配中的兩個數值即可。A：全距
+
+(8)此數值為$\frac{Σ(x-\overline{x})^{2}}{N-1}$。A：母體估計變異數
+
+(9)此數值為$\frac{Σ(x-μ)^{2}}{N_{population}}$。A母體變異數：
+
+(10)此數值為$\frac{SS}{N-1}$。A：母體估計變異數
+
+
+### 3. 某大學心理系同學的ID、班級、身高與體重儲存在檔案hw11.txt中。
+
+##### (1)請利用R讀取hw11.txt資料,儲存在名為health的資料框(data frame)。
+```{r}
+#引入資料
+health = read.table("hw11.txt",header = TRUE)
+```
+
+##### (2)請分別計算height與weight變項的平均數、變異數、標準差、最大值與最小值。
+```{r}
+#變數hegiht宣告和運算
+height_mean = mean(health$height); # 平均
+height_var = var(health$height);# 變異數
+height_sd = sd(health$height);# 標準差
+height_max = max(health$height); # 最大值
+height_min = min(health$height);# 最小值
+#變數wegiht宣告和運算
+weight_mean = mean(health$weight); #平均
+weight_var = var(health$weight); #變異數
+weight_sd = sd(health$weight); #標準差
+weight_max = max(health$weight);#最大值
+weight_min = min(health$weight);#最小值
+```
+
+##### (3)請繪製height變項之直方圖、莖葉圖與箱型圖。
+```{r}
+ggplot(health, aes(x = height)) + geom_histogram(bins=20, fill="white", col="black")+ ggtitle("Height")+
+  ylab("Number of students")+
+  ylim(0,20)#直方圖
+
+stem(health$height)#莖葉圖
+
+ggplot(health, aes(x = height)) + geom_boxplot() #箱型圖
+```
+
+##### (4)請繪製class變項之長條圖與圓餅圖。
+```{r}
+ggplot(health, aes(x = class)) + geom_bar() #長條圖
+
+pie(table(health$class)) #圓餅圖
+```
+

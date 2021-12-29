@@ -1,0 +1,142 @@
+---
+title: "Assignment004: Loading Data"
+author: "陳宥橋"  ## 更換為個人姓名
+date: "`r format(Sys.time(), '%Y/%m/%d %H:%m:%S')`"  ## 請勿更動
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+## Load the required package
+library(tidyverse)
+## Isolate the paths to ahi-cesd and participant-info
+data_path <- dir("..", 
+             pattern= "ahi-cesd.csv", 
+             include.dirs = TRUE, 
+             recursive = TRUE, 
+             full.names = TRUE) 
+
+par_path <- dir("..", 
+             pattern= "participant-info.csv", 
+             include.dirs = TRUE, 
+             recursive = TRUE, 
+             full.names = TRUE) 
+
+```
+
+> 作業演練項目說明，請見[中文講義](https://rstat-project.github.io/ug-tactic/%E9%80%B1-04_%E8%B3%87%E6%96%99%E6%B8%85%E7%90%86%E6%8A%80%E5%B7%A7.html)。
+
+
+
+## 練習3
+
+
+```{r a3}
+data <- read_csv(data_path)
+participant <- read_csv(par_path)
+head(data)
+head(participant)
+```
+
+## 練習4
+
+```{r a4}
+str(participant)
+summary(data)
+```
+
+
+
+> 為了減輕教練與助教批改工作負擔，活用成果請回覆在討論區單元帖。
+> **活用**：論文Figure 2展示的研究流程，其中一個步驟區分參與者是不是參與“Signature Strengths”介入措施，那一個變項紀錄介入措施的區分？這項演練用到的那一個函式可以顯示介入措施的人次？
+
+
+## 練習5
+
+```{r a5}
+all_dat <- inner_join(x = data, # the first table you want to join
+                      y = participant, # the second table you want to join
+                      by = c("id", "intervention")) # columns the two tables have in common
+
+sum(sort(unique(data$id)) == participant$id)
+```
+## 兩個資料聯集
+
+## 練習 6
+
+```{r a6}
+summarydata <- select(.data = all_dat, # name of the object to take data from
+                      ahiTotal, cesdTotal, sex, age, educ, income, occasion,elapsed.days) # all the columns you want to keep
+```
+<!---這個省略的數值為各次測驗分數，但分析上是用全體加成分數分析，故可以省略 --->
+## 練習 7
+
+```{r a7-1}
+ggplot(summarydata, aes(x = as.factor(sex), fill = as.factor(sex))) +
+  geom_bar(show.legend = FALSE, alpha = .8) +
+  scale_x_discrete(name = "Sex") +
+  scale_fill_viridis_d(option = "E") +
+  scale_y_continuous(name = "Number of participants")+
+  theme_minimal()
+```
+
+
+
+```{r a7-2}
+ggplot(summarydata, aes(x = as.factor(income), y = ahiTotal, fill = as.factor(income))) +
+  geom_violin(trim = FALSE, show.legend = FALSE, alpha = .4) +
+  geom_boxplot(width = .2, show.legend = FALSE, alpha = .7)+
+  scale_x_discrete(name = "Income", labels = c("Below Average", "Average", "Above Average")) +
+  scale_y_continuous(name = "Authentic Happiness Inventory Score")+
+  theme_minimal() +
+  scale_fill_viridis_d()
+```
+
+
+> 為了減輕教練與助教批改工作負擔，活用成果請回覆在討論區單元帖。
+> **活用** 運用這項演練運用的註解技巧，分享你從中學到的ggplot語法訣竅。
+
+
+## 練習 8
+
+> 這項練習要並排"無效"與"有效"的R chunk，請留意上課說明。
+
+```{r a8-1-error, eval = FALSE, include = FALSE}
+dat <- read_csv ("ahi-cesd.csv")
+```
+
+```{r a8-1-valid, echo = TRUE}
+dat <- read_csv (data_path)
+```
+<!---檔案儲存位置錯誤，這個檔案認為檔案存在和這個資料夾同個地方--->
+
+```{r a8-2-error, eval = FALSE, include = FALSE}
+library(tidyverse)
+dat <- read_csv("ahi-cesd")
+```
+
+```{r a8-2-valid, echo = TRUE}
+library(tidyverse)
+dat <- read_csv(data_path)
+```
+<!---沒有給副檔名--->
+```{r a8-3-error, eval = FALSE, include = FALSE}
+library(tidyverse)
+dat <- read_csv ("ahi-cesd.csv")
+pinfo <- read_csv("participant-info.csv")
+all_dat <- inner_join(x = dat, 
+                      y = participant, 
+                      by = "id", "intervention") 
+summary(all_dat)
+```
+
+```{r a8-3-valid, echo = TRUE}
+library(tidyverse)
+dat <- read_csv (data_path)
+pinfo <- read_csv(par_path)
+all_dat <- inner_join(x = dat, 
+                      y = participant, 
+                      by = c("id", "intervention") )
+summary(all_dat)
+```
+<!---沒有把兩者認為為一體用c包住--->

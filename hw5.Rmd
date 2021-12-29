@@ -1,0 +1,232 @@
+---
+title: "Assignment0??: "
+author: "陳宥橋"  ## 更換為個人姓名
+date: "`r format(Sys.time(), '%Y/%m/%d %H:%m:%S')`"  ## 請勿更動
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(babynames)
+```
+
+- 所有練習項目除了放置達成練習目標的程式碼及執行成果，也要說明測試程式碼的發現，以及你對執行成果的解讀。
+
+- 部分練習項目需要佈置不只一個chunk，留意電子書及講義的指示。
+
+
+## 練習2
+
+
+```{r a2}
+babynames
+```
+
+問題：電子書5.5的表格解釋變項"prop"是"proportion of all babies of that sex"，請確認這是什麼意思？
+
+
+## 練習3
+
+
+```{r a3-1}
+dat <- babynames %>% #管道運算子
+  filter(name %in% c("Emily","Kathleen","Alexandra","Beverly"), sex=="F")
+# %in%匹配運算子，過濾出有該名字的資料
+ggplot(data = dat,aes(x = year,y = prop, colour=name))+
+  geom_line()  
+```
+
+
+```{r a3-2}
+dat2 <- babynames %>% 
+  filter(name %in% c("Emily","Kathleen","Alexandra","Beverly"))
+
+ggplot(data = dat2,aes(x = year,y = prop, colour=name))+
+  geom_line() +
+  facet_wrap(~sex, scales = "free_y", nrow = 2)
+```
+
+
+```{r a3-3}
+dat3 <- babynames %>% 
+  filter(name %in% c("Sam","Alex","Jordan","Drew"))
+
+ggplot(data = dat3,aes(x = year,y = prop, colour=name))+
+  geom_line() +
+  facet_wrap(~sex, nrow = 2)
+```
+
+
+> 為了減輕教練與助教批改工作負擔，活用成果請回覆在討論區單元帖。
+> **活用**：我想看仼何4個男生名字熱門度的視覺化，要怎麼製作？分享並說明你的程式碼與視覺化成果。
+
+
+## 練習4
+
+
+```{r a4}
+select(.data = babynames, year,sex,name,prop)
+##可以選你要的參數
+
+select(.data = babynames, -n)##可以拿掉不要的
+
+
+new_data = select(.data = babynames, -n)##for 後面練習
+```
+
+
+透過比較5.7三塊程式碼，紀錄`select()`參數的功能
+
+## 練習5
+
+
+```{r a5 -1 }
+arrange(babynames,  desc(sex),desc(year), desc(prop)) 
+```
+```{r a5 -2}
+arrange(babynames,desc(year))  #desc ->降序排列
+
+```
+
+```{r a5 - 3}
+arrange(babynames,  desc(sex),desc(year), desc(prop)) 
+```
+透過測試5.8最後一塊程式碼，紀錄`arrange()`參數的功能
+
+
+## 練習6
+
+
+
+```{r a6 -1 }
+ filter(.data = babynames, year > 2000)
+#只要year>2000 的
+```
+
+```{r a6 -2}
+ filter(.data = babynames, year >= 2000)
+#只要year大於等於2000 的
+```
+
+```{r a6 -3}
+ filter(.data = babynames, year== 2000)
+#只要year等於2000 的
+```
+
+```{r a6 -4}
+filter(.data = babynames, year != 2000)
+#只要year不等於2000 的
+```
+
+```{r a6 -5}
+ filter(.data = babynames, year < 2000)
+#只要year小於2000 的
+```
+
+
+```{r a6 -6}
+ filter(.data = babynames, year <= 2000)
+#只要year小於等於2000 的
+```
+
+
+
+```{r a6 -7 }
+filter(babynames, name == "Mary")
+# 名子是Mary
+```
+
+```{r a6 -8 }
+filter(babynames, name != "Mary")
+# 名子不是Mary
+```
+
+```{r a6 -9  }
+filter(babynames, name %in% c("Mary","Elizabeth","Victoria"))
+# 名子是三者其中之一
+```
+
+```{r a6 -10  }
+filter(babynames, !(name %in% c("Mary","Elizabeth","Victoria")))
+# 名子不屬於三者其中任一
+```
+**課後演練**：測試並紀錄上課未示範的程式碼區塊。
+
+
+> 為了減輕教練與助教批改工作負擔，活用成果請回覆在討論區單元帖。
+> **活用**：自行設計一個範例，示範如何運用`%in%`。
+
+
+## 練習7
+
+
+```{r a7}
+new_dat <- mutate(.data = babynames, # the tibble you want to add a column to
+                  decade = floor(year/10) *10) # new column name = what you want it to contain
+new_dat
+
+#test
+mutate(.data = babynames, # the tibble you want to add a column to
+Amy = n < 1000)
+```
+
+提示：加入上課示範的程式碼，了解為何能用程式碼的公式計算年代。
+
+> 為了減輕教練與助教批改工作負擔，活用成果請回覆在討論區單元帖。
+> **活用**：根據正向心理研究資料的[code-book.pdf](https://rstat-project.github.io/ug-tactic/files/data/code-book.pdf)，如果沒有"achiTotal"與"cesdTotal"兩個變項，如何運用`mutate()`製造？
+
+
+## 練習8
+
+
+```{r a8 - 1}
+summarise(.data = dat, # the data you want to use
+          total = sum(n)) # result = operation
+```
+
+```{r a8 - 2}
+group_dat <- group_by(.data = dat, # the data you want to group
+                      name) # the variable you want to group by
+```
+
+```{r a8 - 3}
+group_dat <- group_by(.data = dat, # the data you want to group
+                      name) # the variable you want to group by
+summarise(.data = group_dat, 
+          total = sum(n)) 
+##分組總數統計
+```
+
+```{r a8 - 4}
+group_new_dat <- group_by(new_dat, sex, decade)
+summarise(group_new_dat,
+          mean_year = mean(n),
+          median_year = median(n))
+```
+
+```{r a8 - test}
+group_data_test <- group_by(babynames,sex)
+summarise(.data = group_data_test, 
+          total = sum(n))
+```
+**課後演練**：如何運用summarise()，回應練習2的問題。不一定要正確，只要有嘗試寫至少兩行程式碼即可。
+
+
+> 為了減輕教練與助教批改工作負擔，活用成果請回覆在討論區單元帖。
+> **活用**：分享你測試出來的解決方法。繳交期限之後在討論區點評，正確者得emoji。
+
+
+## 練習9
+
+
+```{r a9}
+pipe_summary <- mutate(babynames, decade = floor(year/10) *10) %>% #改變項
+  filter(name %in%  c("Emily","Kathleen","Alexandra","Beverly"), sex=="F") %>%  #過濾出自己要的人名
+  group_by(name, decade) %>% #過濾出要的變相
+  summarise(mean_decade = mean(n)) #拿去取平均
+```
+
+
+提示：這塊程式碼整合前面那幾項練習的程式碼？做幾次歸零測試，了解與前項程式碼相比有何優點？
+#我認為最大的優點在於，可以簡劭程式碼的行數，也可以減少變相需要需宣告的次數，所以便可以減少空間上的使用。
